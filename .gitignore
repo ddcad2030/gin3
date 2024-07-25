@@ -1,0 +1,14 @@
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+TODO.md
+logs.txt
+/temp
+temp/
+build
+app.env
