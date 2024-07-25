@@ -10,5 +10,5 @@ TODO.md
 logs.txt
 /temp
 temp/
-bin
+/bin
 app.env
