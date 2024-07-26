@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/ddcad2030/gin3/initalizers"
 	"github.com/ddcad2030/gin3/models"
@@ -30,9 +31,11 @@ func UserCreate(c *gin.Context) {
 	}
 
 	newUser := models.User{
-		Email:    payload.Email,
-		Name:     payload.Name,
-		Password: payload.Password,
+		Email:     payload.Email,
+		Name:      payload.Name,
+		Password:  payload.Password,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
 	result := initalizers.DB.Create(&newUser)
 
