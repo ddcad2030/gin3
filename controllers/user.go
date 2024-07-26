@@ -55,3 +55,69 @@ func UserCreate(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, models.GetOperationSuccessResponse(userResponse))
 }
+
+func UserGetById(c *gin.Context) {
+	var user *models.User
+
+	result := initalizers.DB.First(&user, "id = ?", c.Param("id"))
+	if result.Error != nil {
+		c.JSON(http.StatusNotFound, models.GetOperationErrorResponse(result.Error.Error()))
+		return
+	}
+
+	c.JSON(http.StatusOK, models.GetOperationSuccessResponse(user))
+}
+
+func UserUpdate(c *gin.Context) {
+	var user *models.User
+	resultFind := initalizers.DB.First(&user, "id = ?", c.Param("id"))
+	if resultFind.Error != nil {
+		c.JSON(http.StatusNotFound, models.GetOperationErrorResponse(resultFind.Error.Error()))
+		return
+	}
+	var payload *models.UserUpdate
+	if err := c.ShouldBindJSON(&payload); err != nil {
+		c.JSON(http.StatusBadGateway, models.GetOperationFailureResponse(err.Error()))
+		return
+	}
+
+	updateUser := models.UserUpdate{
+		Name:      payload.Name,
+		Email:     payload.Email,
+		UpdatedAt: time.Now(),
+	}
+
+	result := initalizers.DB.Model(&user).Updates(updateUser)
+	if result.Error != nil {
+		c.JSON(http.StatusBadGateway, models.GetOperationFailureResponse(result.Error.Error()))
+		return
+	}
+
+	userResponse := &models.UserResponse{
+		ID:        user.ID,
+		Name:      user.Name,
+		Email:     user.Email,
+		Password:  user.Password,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	}
+	c.JSON(http.StatusOK, models.GetOperationSuccessResponse(userResponse))
+
+}
+
+func UserDelete(c *gin.Context) {
+	var user *models.User
+	resultFind := initalizers.DB.First(&user, "id = ?", c.Param("id"))
+	if resultFind.Error != nil {
+		c.JSON(http.StatusNotFound, models.GetOperationErrorResponse(resultFind.Error.Error()))
+		return
+	}
+
+	result := initalizers.DB.Where("id = ?", c.Param("id")).Delete(&user)
+
+	if result.Error != nil {
+		c.JSON(http.StatusBadGateway, models.GetOperationFailureResponse(result.Error.Error()))
+		return
+	}
+	c.JSON(http.StatusOK, models.GetOperationSuccessResponse(user))
+}

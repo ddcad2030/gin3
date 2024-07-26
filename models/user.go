@@ -7,7 +7,7 @@ import (
 )
 
 type User struct {
-	ID        uuid.UUID `gorm:"type:uuid;default:gen_random_uuid()"`
+	ID        uuid.UUID `gorm:"type:uuid;default:gen_random_uuid()" json:"id"`
 	Name      string    `gorm:"type:varchar(255); not null"`
 	Email     string    `gorm:"uniqueIndex; not null"`
 	Password  string    `gorm:"type:varchar(255); not null"`
@@ -33,6 +33,7 @@ type UserCreate struct {
 }
 
 type UserUpdate struct {
-	Email    string `json:"email" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	Name      string    `json:"name"`
+	Email     string    `json:"email"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
