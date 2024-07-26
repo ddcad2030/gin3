@@ -1,0 +1,38 @@
+services:
+  db:
+    container_name: $DB_HOST
+    env_file: ./.env
+    image: postgres:16
+    restart: unless-stopped
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - $DB_HOST_PORT:$DB_CONTAINER_PORT
+    environment:
+      POSTGRES_USER: $DB_USER
+      POSTGRES_PASSWORD: $DB_PASSWORD
+      POSTGRES_DB: $DB_NAME  
+    # healthcheck:
+    #   test: ["CMD-SHELL", "pg_isready"]
+    #   interval: 10s
+    #   retries: 60
+    networks:
+      - backend
+  # app:
+  #   container_name: app_golang
+  #   env_file: ./.env
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #   build:
+  #     context: ./
+  #     dockerfile: Dockerfile
+  #   restart: unless-stopped
+  #   ports:
+  #     - $GO_HOST_PORT:$GO_CONTAINER_PORT
+  #   networks:
+  #     - backend
+networks:
+  backend:
+volumes:
+  pgdata: {}

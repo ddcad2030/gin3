@@ -1,18 +1,25 @@
 package main
 
 import (
-	"net/http"
+	"log"
 
+	"github.com/ddcad2030/gin3/initalizers"
+	"github.com/ddcad2030/gin3/routes"
 	"github.com/gin-gonic/gin"
 )
 
+func init() {
+	config, err := initalizers.LoadConfig(".")
+	if err != nil {
+		log.Fatal("Cannot load environment", err)
+	}
+	initalizers.ConnectDB(&config)
+	initalizers.Migration()
+}
+
 func main() {
 	r := gin.Default()
-	r.GET("/hello", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": http.StatusText(http.StatusOK),
-		})
-	})
+	routes.UserRoutes(r)
 
 	r.Run()
 }
