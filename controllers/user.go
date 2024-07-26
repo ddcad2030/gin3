@@ -14,13 +14,10 @@ func UserGet(c *gin.Context) {
 	users := []models.User{}
 	result := initalizers.DB.Find(&users)
 	if result.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"message": http.StatusText(http.StatusNotFound),
-		})
+		c.JSON(http.StatusNotFound, models.GetOperationSuccessResponse(users))
 		return
 	}
 	c.JSON(http.StatusOK, users)
-
 }
 
 func UserCreate(c *gin.Context) {
@@ -41,18 +38,20 @@ func UserCreate(c *gin.Context) {
 
 	if result.Error != nil {
 		if strings.Contains(result.Error.Error(), "duplicate") {
-			c.JSON(http.StatusConflict, gin.H{
-				"status":  "fail",
-				"message": "Email already exists",
-			})
+			c.JSON(http.StatusConflict, models.GetOperationFailureResponse("Email already exists"))
 			return
 		}
-		c.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": result.Error.Error()})
+		c.JSON(http.StatusBadGateway, models.GetOperationErrorResponse(result.Error.Error()))
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
-		"stauts": "success",
-		"data":   newUser,
-	})
+	userResponse := &models.UserResponse{
+		ID:        newUser.ID,
+		Name:      newUser.Name,
+		Email:     newUser.Email,
+		Password:  newUser.Password,
+		CreatedAt: newUser.CreatedAt,
+		UpdatedAt: newUser.UpdatedAt,
+	}
+	c.JSON(http.StatusOK, models.GetOperationSuccessResponse(userResponse))
 }
